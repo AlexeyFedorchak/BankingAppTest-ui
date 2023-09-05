@@ -1,9 +1,24 @@
+<script setup>
+import { ref } from 'vue'
+
+const perPageOptions = ref([
+  { name: '5', code: 5 },
+  { name: '10', code: 10 },
+  { name: '20', code: 20 },
+  { name: '50', code: 50 },
+]);
+</script>
+
 <script>
-import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout } from '@tabler/icons-vue';
+import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout, IconChevronRight, IconChevronsRight, IconChevronLeft, IconChevronsLeft } from '@tabler/icons-vue';
 import axios from "axios";
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Button from 'primevue/button';
+import Dropdown from 'primevue/dropdown';
+
+const activePage = ref(1);
+const lastPage = ref(1);
+const perPage = ref({ name: '5', code: 5 });
 
 export default {
   name: 'Home',
@@ -14,9 +29,13 @@ export default {
     IconTransfer,
     IconMailForward,
     IconLogout,
+    IconChevronRight,
+    IconChevronsRight,
+    IconChevronLeft,
+    IconChevronsLeft,
     DataTable,
     Column,
-    Button
+    Dropdown
   },
   data() {
     this.activateTab('home')
@@ -94,13 +113,24 @@ export default {
         this.activateTab('home')
       })
     },
+    pagination(index) {
+      switch (index) {
+        case -2: activePage.value = 1; break;
+        case -1: activePage.value--; break;
+        case 1: activePage.value++; break;
+        case 2: activePage.value = lastPage.value; break;
+      }
+      this.statement()
+    },
     statement() {
-      axios.get('/money/statements',{
+      axios.get(`/money/statements?per_page=${perPage.value.code}&page=${activePage.value}`,{
         'headers': {
           'Accept': 'application/json'
         }
       })
           .then((response) => {
+            activePage.value = response.data.meta.current_page;
+            lastPage.value = response.data.meta.last_page;
             this.statements = [];
             response.data.data.forEach(item => {
               this.statements.push({
@@ -293,15 +323,35 @@ export default {
             <h2>Statement of account</h2>
           </div>
           <div class="px-7 pt-3 pb-7 w-9/12 bg-white border-x border-b border-gray-300 rounded-b-md">
-            <DataTable :value="statements" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
-                       paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
-                       currentPageReportTemplate="{first} to {last} of {totalRecords}">
-              <Column field="datetime" header="Datetime" class="w-2/6" sortable></Column>
-              <Column field="amount" header="Amount" sortable ></Column>
-              <Column field="type" header="Type" sortable></Column>
-              <Column field="details" header="Details" sortable></Column>
-              <Column field="balance" header="Balance" sortable></Column>
+            <DataTable :value="statements">
+              <Column field="datetime" header="Date Time" class="w-2/6"></Column>
+              <Column field="amount" header="Amount"></Column>
+              <Column field="type" header="Type"></Column>
+              <Column field="details" header="Details"></Column>
+              <Column field="balance" header="Balance"></Column>
             </DataTable>
+            <div class="flex justify-between mt-5">
+              <div class="flex">
+                <button @click="pagination(-2)" :disabled="activePage === 1" class="disabled:opacity-50 focus:outline-none px-1 py-2 round cursor-pointer hover:border-blue-500 hover:text-blue-500 flex justify-center items-center">
+                  <IconChevronsLeft :size="24" stroke-width="1" />
+                </button>
+                <button @click="pagination(-1)" :disabled="activePage === 1" class="disabled:opacity-50 focus:outline-none px-1 py-2 round cursor-pointer hover:border-blue-500 hover:text-blue-500 flex justify-center items-center">
+                  <IconChevronLeft :size="24" stroke-width="1" />
+                </button>
+                <div class="focus:outline-none px-1 py-2 round hover:text-blue-500 flex justify-center items-center">
+                  <span class="px-2">{{ activePage }}</span>
+                </div>
+                <button @click="pagination(1)" :disabled="activePage === lastPage" class="disabled:opacity-50 focus:outline-none px-1 py-2 round cursor-pointer hover:border-blue-500 hover:text-blue-500 flex justify-center items-center">
+                  <IconChevronRight :size="24" stroke-width="1" />
+                </button>
+                <button @click="pagination(2)" :disabled="activePage === lastPage" class="disabled:opacity-50 focus:outline-none px-1 py-2 round cursor-pointer hover:border-blue-500 hover:text-blue-500 flex justify-center items-center">
+                  <IconChevronsRight :size="24" stroke-width="1" />
+                </button>
+              </div>
+
+              <Dropdown v-on:change="pagination(-2)" v-model="perPage" :options="perPageOptions" optionLabel="name" class="w-1/4" />
+            </div>
+
           </div>
         </div>
 
