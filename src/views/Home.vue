@@ -40,7 +40,7 @@ export default {
       }
     },
     logout() {
-      axios.get(import.meta.env.VITE_API_URL + '/api/auth/logout',{
+      axios.get('/auth/logout',{
         'headers': {
           'Accept': 'application/json'
         }
@@ -50,7 +50,7 @@ export default {
       })
     },
     home() {
-      axios.get(import.meta.env.VITE_API_URL + '/api/users/me',{
+      axios.get('users/me',{
         'headers': {
           'Accept': 'application/json'
         }
@@ -61,7 +61,7 @@ export default {
       })
     },
     deposit() {
-      axios.post(import.meta.env.VITE_API_URL + '/api/money/deposit',{
+      axios.post('/money/deposit',{
         'amount': this.depositAmount
       }, {
         'headers': {
@@ -72,7 +72,7 @@ export default {
       })
     },
     withdraw() {
-      axios.post(import.meta.env.VITE_API_URL + '/api/money/withdraw',{
+      axios.post('money/withdraw',{
         'amount': this.withdrawAmount
       }, {
         'headers': {
@@ -83,7 +83,7 @@ export default {
       })
     },
     transfer() {
-      axios.post(import.meta.env.VITE_API_URL + '/api/money/transfer',{
+      axios.post('/money/transfer',{
         'amount': this.transferAmount,
         'email': this.transferEmail,
       }, {
@@ -95,7 +95,7 @@ export default {
       })
     },
     statement() {
-      axios.get(import.meta.env.VITE_API_URL + '/api/money/statements',{
+      axios.get('/money/statements',{
         'headers': {
           'Accept': 'application/json'
         }

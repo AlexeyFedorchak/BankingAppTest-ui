@@ -10,7 +10,7 @@ export default {
   },
   methods: {
     login() {
-      axios.post(import.meta.env.VITE_API_URL + '/api/auth/login', {
+      axios.post('/auth/login', {
             email: this.email,
             password: this.password,
           },

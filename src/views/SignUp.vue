@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     register() {
-      axios.post(import.meta.env.VITE_API_URL + '/api/auth/signup', {
+      axios.post('/auth/signup', {
             email: this.email,
             name: this.name,
             password: this.password,
