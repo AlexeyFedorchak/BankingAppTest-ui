@@ -17,6 +17,7 @@ router.beforeEach((to, from) => {
         !isAuthenticated
         && to.name !== 'Login'
         && to.name !== 'Register'
+        && to.name !== 'TermsAndPolicy'
     ) {
         return { name: 'Login' }
     }

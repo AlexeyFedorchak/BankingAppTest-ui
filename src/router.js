@@ -25,6 +25,7 @@ export default createRouter({
         {
             path: '/terms-and-policy',
             component: TermsAndPolicy,
+            name: 'TermsAndPolicy'
         },
         {
             path: "/:catchAll(.*)",
