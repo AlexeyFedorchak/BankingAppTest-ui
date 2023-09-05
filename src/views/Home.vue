@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const perPageOptions = ref([
   { name: '5', code: 5 },
@@ -10,7 +10,7 @@ const perPageOptions = ref([
 </script>
 
 <script>
-import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout, IconChevronRight, IconChevronsRight, IconChevronLeft, IconChevronsLeft } from '@tabler/icons-vue';
+import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout, IconChevronRight, IconChevronsRight, IconChevronLeft, IconChevronsLeft, IconSquareRoundedX } from '@tabler/icons-vue';
 import axios from "axios";
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -19,6 +19,10 @@ import Dropdown from 'primevue/dropdown';
 const activePage = ref(1);
 const lastPage = ref(1);
 const perPage = ref({ name: '5', code: 5 });
+
+const transferError = ref('');
+const depositError = ref('');
+const withdrawError = ref('');
 
 export default {
   name: 'Home',
@@ -33,6 +37,7 @@ export default {
     IconChevronsRight,
     IconChevronLeft,
     IconChevronsLeft,
+    IconSquareRoundedX,
     DataTable,
     Column,
     Dropdown
@@ -80,28 +85,43 @@ export default {
       })
     },
     deposit() {
+      depositError.value = '';
       axios.post('/money/deposit',{
         'amount': this.depositAmount
       }, {
         'headers': {
           'Accept': 'application/json'
         }
+      }).catch(error => {
+        if (error?.response?.data?.message) {
+          depositError.value = error.response.data.message;
+        }
       }).then((response) => {
-            this.activateTab('home')
+        if (response) {
+          this.activateTab('home')
+        }
       })
     },
     withdraw() {
+      withdrawError.value = '';
       axios.post('money/withdraw',{
         'amount': this.withdrawAmount
       }, {
         'headers': {
           'Accept': 'application/json'
         }
+      }).catch(error => {
+        if (error?.response?.data?.message) {
+          withdrawError.value = error.response.data.message;
+        }
       }).then((response) => {
-        this.activateTab('home')
+        if (response) {
+          this.activateTab('home')
+        }
       })
     },
     transfer() {
+      transferError.value = '';
       axios.post('/money/transfer',{
         'amount': this.transferAmount,
         'email': this.transferEmail,
@@ -109,9 +129,15 @@ export default {
         'headers': {
           'Accept': 'application/json'
         }
+      }).catch(error => {
+        if (error?.response?.data?.message) {
+          transferError.value = error.response.data.message;
+        }
       }).then((response) => {
-        this.activateTab('home')
-      })
+        if (response) {
+          this.activateTab('home')
+        }
+      });
     },
     pagination(index) {
       switch (index) {
@@ -216,6 +242,14 @@ export default {
           </div>
           <div class="px-7 pt-3 pb-7 w-9/12 max-md:flex max-md:justify-center bg-white border-x border-b border-gray-300 rounded-b-md">
             <form @submit.prevent="deposit">
+
+              <div v-if="depositError" class="focus:outline-none px-6 py-2 mb-5 rounded text-white bg-red-400 flex justify-between items-center">
+                <span>{{ depositError }}</span>
+                <button @click="depositError = ''" class="focus:outline-none text-red-800 hover:text-white border-none">
+                  <IconSquareRoundedX :size="24" stroke-width="1" />
+                </button>
+              </div>
+
               <div class="mb-4">
                 <label for="deposit-amount" class="block text-gray-700 font-semibold text-left">Amount</label>
                 <input
@@ -248,6 +282,14 @@ export default {
           </div>
           <div class="px-7 pt-3 pb-7 w-9/12 max-md:flex max-md:justify-center bg-white border-x border-b border-gray-300 rounded-b-md">
             <form @submit.prevent="withdraw">
+
+              <div v-if="withdrawError" class="focus:outline-none px-6 py-2 mb-5 rounded text-white bg-red-400 flex justify-between items-center">
+                <span>{{ withdrawError }}</span>
+                <button @click="withdrawError = ''" class="focus:outline-none text-red-800 hover:text-white border-none">
+                  <IconSquareRoundedX :size="24" stroke-width="1" />
+                </button>
+              </div>
+
               <div class="mb-4">
                 <label for="withdraw-amount" class="block text-gray-700 font-semibold text-left">Amount</label>
                 <input
@@ -280,6 +322,14 @@ export default {
           </div>
           <div class="px-7 pt-3 pb-7 w-9/12 max-md:flex max-md:justify-center bg-white border-x border-b border-gray-300 rounded-b-md">
             <form @submit.prevent="transfer">
+
+              <div v-if="transferError" class="focus:outline-none px-6 py-2 mb-5 rounded text-white bg-red-400 flex justify-between items-center">
+                <span>{{ transferError }}</span>
+                <button @click="transferError = ''" class="focus:outline-none text-red-800 hover:text-white border-none">
+                  <IconSquareRoundedX :size="24" stroke-width="1" />
+                </button>
+              </div>
+
               <div class="mb-4">
                 <label for="transfer-email" class="block text-gray-700 font-semibold text-left">Email address</label>
                 <input
