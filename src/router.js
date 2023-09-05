@@ -20,6 +20,7 @@ export default createRouter({
         {
             path: '/register',
             component: SignUp,
+            name: 'Register'
         },
         {
             path: '/terms-and-policy',

@@ -1,6 +1,9 @@
 <script>
 import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout } from '@tabler/icons-vue';
 import axios from "axios";
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
 
 export default {
   name: 'Home',
@@ -11,6 +14,9 @@ export default {
     IconTransfer,
     IconMailForward,
     IconLogout,
+    DataTable,
+    Column,
+    Button
   },
   data() {
     this.activateTab('home')
@@ -98,7 +104,7 @@ export default {
             this.statements = [];
             response.data.data.forEach(item => {
               this.statements.push({
-                'dateTime': item.created_at,
+                'datetime': item.created_at,
                 'amount': item.owner.amount,
                 'type': item.type,
                 'details': item.details,
@@ -282,7 +288,22 @@ export default {
       </div>
       <div v-if="activeTab === 'statement'" class="mt-4">
 
-        Statement
+        <div class="text-left flex items-center flex-col border-collapse">
+          <div class="pl-7 py-4 w-9/12 max-md:flex max-md:justify-center bg-white border border-gray-300 rounded-t-md">
+            <h2>Statement of account</h2>
+          </div>
+          <div class="px-7 pt-3 pb-7 w-9/12 bg-white border-x border-b border-gray-300 rounded-b-md">
+            <DataTable :value="statements" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+                       paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
+                       currentPageReportTemplate="{first} to {last} of {totalRecords}">
+              <Column field="datetime" header="Datetime" class="w-2/6" sortable></Column>
+              <Column field="amount" header="Amount" sortable ></Column>
+              <Column field="type" header="Type" sortable></Column>
+              <Column field="details" header="Details" sortable></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+            </DataTable>
+          </div>
+        </div>
 
       </div>
     </main>
