@@ -1,4 +1,6 @@
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -9,7 +11,19 @@ export default {
   },
   methods: {
     register() {
-
+      axios.post(import.meta.env.VITE_API_URL + '/api/auth/signup', {
+            email: this.email,
+            name: this.name,
+            password: this.password,
+          },
+          {
+            'headers': {
+              'Accept': 'application/json'
+            }
+          }
+      ).then((response) => {
+        this.$router.push({path: '/login'})
+      })
     }
   }
 };

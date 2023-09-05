@@ -1,4 +1,6 @@
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -8,7 +10,19 @@ export default {
   },
   methods: {
     login() {
-
+      axios.post(import.meta.env.VITE_API_URL + '/api/auth/login', {
+            email: this.email,
+            password: this.password,
+          },
+          {
+            'headers': {
+              'Accept': 'application/json'
+            }
+          }
+      ).then((response) => {
+        localStorage.setItem('authToken', response.data.access_token)
+        this.$router.push({path: '/dashboard'})
+      })
     }
   }
 };

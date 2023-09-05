@@ -1,5 +1,6 @@
 <script>
 import { IconHome, IconCloudDownload, IconCloudUpload, IconTransfer, IconMailForward, IconLogout } from '@tabler/icons-vue';
+import axios from "axios";
 
 export default {
   name: 'Home',
@@ -12,31 +13,99 @@ export default {
     IconLogout,
   },
   data() {
+    this.activateTab('home')
     return {
       activeTab: 'home',
-      id: 'john.doe@gmail.com',
-      balance: '20,000.00 INR',
+      id: '',
+      balance: '',
       depositAmount: '',
       withdrawAmount: '',
       transferAmount: '',
       transferEmail: '',
+      statements: [],
     };
   },
   methods: {
     activateTab(index) {
       this.activeTab = index;
+      switch (index) {
+        case 'home': this.home(); break;
+        case 'statement': this.statement(); break;
+      }
     },
     logout() {
-      alert('Logout');
+      axios.get(import.meta.env.VITE_API_URL + '/api/auth/logout',{
+        'headers': {
+          'Accept': 'application/json'
+        }
+      }).then((response) => {
+        localStorage.removeItem('authToken')
+        this.$router.push({path: '/login'})
+      })
+    },
+    home() {
+      axios.get(import.meta.env.VITE_API_URL + '/api/users/me',{
+        'headers': {
+          'Accept': 'application/json'
+        }
+      })
+          .then((response) => {
+            this.id = response.data.data.email;
+            this.balance = response.data.data.balance.amount;
+      })
     },
     deposit() {
-
+      axios.post(import.meta.env.VITE_API_URL + '/api/money/deposit',{
+        'amount': this.depositAmount
+      }, {
+        'headers': {
+          'Accept': 'application/json'
+        }
+      }).then((response) => {
+            this.activateTab('home')
+      })
     },
     withdraw() {
-
+      axios.post(import.meta.env.VITE_API_URL + '/api/money/withdraw',{
+        'amount': this.withdrawAmount
+      }, {
+        'headers': {
+          'Accept': 'application/json'
+        }
+      }).then((response) => {
+        this.activateTab('home')
+      })
     },
     transfer() {
-
+      axios.post(import.meta.env.VITE_API_URL + '/api/money/transfer',{
+        'amount': this.transferAmount,
+        'email': this.transferEmail,
+      }, {
+        'headers': {
+          'Accept': 'application/json'
+        }
+      }).then((response) => {
+        this.activateTab('home')
+      })
+    },
+    statement() {
+      axios.get(import.meta.env.VITE_API_URL + '/api/money/statements',{
+        'headers': {
+          'Accept': 'application/json'
+        }
+      })
+          .then((response) => {
+            this.statements = [];
+            response.data.data.forEach(item => {
+              this.statements.push({
+                'dateTime': item.created_at,
+                'amount': item.owner.amount,
+                'type': item.type,
+                'details': item.details,
+                'balance': item.balance,
+              })
+            })
+          })
     },
   },
 };
