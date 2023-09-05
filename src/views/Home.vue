@@ -14,6 +14,8 @@ export default {
   data() {
     return {
       activeTab: 'home',
+      id: 'john.doe@gmail.com',
+      balance: '20,000.00 INR',
       depositAmount: '',
       withdrawAmount: '',
       transferAmount: '',
@@ -90,13 +92,13 @@ export default {
           <div class="pl-7 py-4 w-9/12 max-md:flex max-md:justify-center bg-white border border-gray-300 rounded-t-md">
             <h2>Welcome John Doe</h2>
           </div>
-          <div class="w-full pl-7 py-3 w-9/12 max-md:flex max-md:justify-center bg-white border-x border-gray-300">
+          <div class="pl-7 py-3 w-9/12 max-md:flex max-md:justify-center bg-white border-x border-gray-300">
             <div class="inline-block w-1/4"><span class="text-gray-400 text-sm uppercase">Your id</span></div>
-            <span>john.doe@gmail.com</span>
+            <span>{{ id }}</span>
           </div>
           <div class="pl-7 py-3 w-9/12 max-md:flex max-md:justify-center bg-white border border-gray-300 rounded-b-md">
             <div class="inline-block w-1/4"><span class="text-gray-400 text-sm uppercase">Your balance</span></div>
-            <span>20,000.00 INR</span>
+            <span>{{ balance }}</span>
           </div>
         </div>
 
